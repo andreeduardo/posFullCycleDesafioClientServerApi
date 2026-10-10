@@ -4,48 +4,56 @@ Neste desafio, você deve aplicar os conhecimentos de HTTP, Contextos, Banco de 
 
 Componentes do Sistema Você precisará entregar dois arquivos principais:
 
-client.go
+- client.go
+- server.go
 
-server.go
+## Requisitos Técnicos: Server.go 
 
-Requisitos Técnicos: Server.go O servidor HTTP deve operar na porta 8080 e expor o endpoint /cotacao.
+### O servidor HTTP deve operar na porta 8080 e expor o endpoint /cotacao.
 
-Consumo de API Externa:
+### Consumo de API Externa:
 
-Ao receber uma requisição em /cotacao, o server deve consumir a API de Câmbio: https://economia.awesomeapi.com.br/json/last/USD-BRL.
-Timeout: O timeout máximo para chamar essa API externa deve ser de 200ms (usando o pacote context).
-Persistência (Banco de Dados):
+- Ao receber uma requisição em /cotacao, o server deve consumir a API de Câmbio: https://economia.awesomeapi.com.br/json/last/USD-BRL.
+- Timeout: O timeout máximo para chamar essa API externa deve ser de 200ms (usando o pacote context).
 
-O servidor deve registrar cada cotação recebida em um banco de dados SQLite.
-Timeout: O timeout máximo para persistir os dados no banco deve ser de 10ms (usando o pacote context).
-Resposta:
+### Persistência (Banco de Dados):
 
-O endpoint deve retornar o resultado da cotação em formato JSON para o cliente.
-Logs:
+- O servidor deve registrar cada cotação recebida em um banco de dados SQLite.
+- Timeout: O timeout máximo para persistir os dados no banco deve ser de 10ms (usando o pacote context).
 
-Caso os timeouts (API ou Banco) sejam excedidos, o erro deve ser logado no console do servidor.
-Requisitos Técnicos: Client.go O cliente deve realizar uma requisição HTTP ao server.go.
+### Resposta:
 
-Requisição:
+- O endpoint deve retornar o resultado da cotação em formato JSON para o cliente.
 
-Deve solicitar a cotação ao endpoint /cotacao do servidor local.
-Timeout: O timeout máximo para receber o resultado do servidor deve ser de 300ms (usando o pacote context).
-Processamento e Arquivo:
+### Logs:
 
-O cliente deve receber apenas o valor atual do câmbio (campo bid do JSON).
-Deve salvar a cotação em um arquivo chamado cotacao.txt.
+- Caso os timeouts (API ou Banco) sejam excedidos, o erro deve ser logado no console do servidor.
+
+## Requisitos Técnicos: Client.go 
+
+### O cliente deve realizar uma requisição HTTP ao server.go.
+
+### Requisição:
+
+- Deve solicitar a cotação ao endpoint /cotacao do servidor local.
+- Timeout: O timeout máximo para receber o resultado do servidor deve ser de 300ms (usando o pacote context).
+
+### Processamento e Arquivo:
+
+- O cliente deve receber apenas o valor atual do câmbio (campo bid do JSON).
+- Deve salvar a cotação em um arquivo chamado cotacao.txt.
 Formato do arquivo: Dólar: {valor}
-Logs:
 
-Caso o timeout de 300ms seja excedido, o erro deve ser logado no console do cliente.
-Entregável
+### Logs:
 
-Link do Repositório: O link para o seu repositório no GitHub contendo o código fonte (client.go, server.go, etc).
+- Caso o timeout de 300ms seja excedido, o erro deve ser logado no console do cliente.
 
-README: Instruções de como rodar ambos os serviços.
+## Entregável
 
-Regras de Entrega
+- Link do Repositório: O link para o seu repositório no GitHub contendo o código fonte (client.go, server.go, etc).
+- README: Instruções de como rodar ambos os serviços.
 
-Repositório Único: É obrigatória a entrega de apenas um projeto por repositório.
+## Regras de Entrega
 
-Branch Principal: Todo o código deve estar na branch main.
+- Repositório Único: É obrigatória a entrega de apenas um projeto por repositório.
+- Branch Principal: Todo o código deve estar na branch main.
