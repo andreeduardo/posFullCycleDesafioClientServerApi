@@ -1,9 +1,11 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"io"
 	"net/http"
+	"time"
 )
 
 // Struct que mapeia o retorno da API de cotação
@@ -42,25 +44,44 @@ func BuscaCotacaoHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+
+	// Escrever no header do respose e retorna
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(cotacao)
 }
 
 func BuscaCotacao() (*Cotacao, error) {
-	resp, error := http.Get("https://economia.awesomeapi.com.br/json/last/USD-BRL")
-	if error != nil {
-		return nil, error
+	// Cria o contexto com o time limit de 200ms
+	ctx := context.Background()
+	ctx, cancel := context.WithTimeout(ctx, time.Millisecond*200)
+	defer cancel()
+
+	// Cria a requisição
+	req, err := http.NewRequestWithContext(ctx, "GET", "https://economia.awesomeapi.com.br/json/last/USD-BRL", nil)
+	if err != nil {
+		panic(err)
+	}
+
+	// Faz a requisição para recuperar a cotação
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		panic(err)
 	}
 	defer resp.Body.Close()
+
+	// Recupera o body retornado
 	body, error := io.ReadAll(resp.Body)
 	if error != nil {
 		return nil, error
 	}
-	var c Cotacao
-	error = json.Unmarshal(body, &c)
+
+	// Faz o json encode e mapeia na struct Cotacao
+	var cotacao Cotacao
+	error = json.Unmarshal(body, &cotacao)
 	if error != nil {
 		return nil, error
 	}
-	return &c, nil
+
+	return &cotacao, nil
 }
