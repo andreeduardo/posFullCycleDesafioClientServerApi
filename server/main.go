@@ -2,11 +2,15 @@ package main
 
 import (
 	"context"
+	"database/sql"
 	"encoding/json"
 	"io"
 	"log"
 	"net/http"
+	"os"
 	"time"
+
+	_ "github.com/mattn/go-sqlite3"
 )
 
 // Struct que mapeia o retorno da API de cotação
@@ -43,6 +47,39 @@ func BuscaCotacaoHandler(w http.ResponseWriter, r *http.Request) {
 	cotacao, err := BuscaCotacao()
 
 	// Se der algum erro, escreve no log do servidor e retorna um erro 500 para quem chamou a API
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		log.Println(err)
+		return
+	}
+
+	// Valida se o arquivo database.db está criado e se não tiver, cria ele
+	_, err = os.OpenFile("./database.db", os.O_CREATE, 0644)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		log.Println(err)
+		return
+	}
+
+	// Carrega o BD
+	db, err := sql.Open("sqlite3", "./database.db")
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		log.Println(err)
+		return
+	}
+	defer db.Close()
+
+	// Cria a tabela de cotação, caso não existir
+	err = criaTabelaCotacao(db)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		log.Println(err)
+		return
+	}
+
+	// Insere a cotação consultada na tabela
+	err = insertCotacao(db, cotacao)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		log.Println(err)
@@ -88,4 +125,38 @@ func BuscaCotacao() (*Cotacao, error) {
 	}
 
 	return &cotacao, nil
+}
+
+func criaTabelaCotacao(db *sql.DB) error {
+	_, err := db.Exec(`
+		CREATE TABLE IF NOT EXISTS cotacoes (
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			bid TEXT
+		)
+	`)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func insertCotacao(db *sql.DB, cotacao *Cotacao) error {
+	// Cria o contexto com o time limit de 10ms
+	ctx := context.Background()
+	ctx, cancel := context.WithTimeout(ctx, 10*time.Millisecond)
+	defer cancel()
+
+	_, err := db.ExecContext(
+		ctx,
+		"INSERT INTO cotacoes (bid) VALUES (?)",
+		cotacao.USDBRL.Bid,
+	)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
