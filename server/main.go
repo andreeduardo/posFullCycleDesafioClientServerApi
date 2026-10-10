@@ -86,10 +86,10 @@ func BuscaCotacaoHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Escrever no header do respose e retorna
+	// Escrever no header do respose e retorna apenas o valor da cotação
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(cotacao)
+	json.NewEncoder(w).Encode(cotacao.USDBRL.Bid)
 }
 
 func BuscaCotacao() (*Cotacao, error) {
