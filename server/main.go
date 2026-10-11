@@ -13,7 +13,7 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-// Struct que mapeia o retorno da API de cotação
+// Struct que mapeia o retorno da API externa de cotação
 type Cotacao struct {
 	USDBRL struct {
 		Code       string `json:"code"`
@@ -28,6 +28,11 @@ type Cotacao struct {
 		Timestamp  string `json:"timestamp"`
 		CreateDate string `json:"create_date"`
 	} `json:"USDBRL"`
+}
+
+// Struct que mapeia apenas o response da API /cotacao
+type CotacaoResponse struct {
+	Bid string `json:"bid"`
 }
 
 func main() {
@@ -70,10 +75,14 @@ func BuscaCotacaoHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Escrever no header do respose e retorna apenas o valor da cotação cotacao.USDBRL.Bid
+	cotacaoResponse := CotacaoResponse{
+		Bid: cotacao.USDBRL.Bid,
+	}
+
+	// Retornar apenas o valor da cotação
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(cotacao.USDBRL.Bid)
+	json.NewEncoder(w).Encode(cotacaoResponse)
 }
 
 func BuscaCotacao() (*Cotacao, error) {
