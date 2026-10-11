@@ -53,16 +53,8 @@ func BuscaCotacaoHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Valida se o arquivo database.db está criado e se não tiver, cria ele
-	_, err = os.OpenFile("./database.db", os.O_CREATE, 0644)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		log.Println(err)
-		return
-	}
-
-	// Carrega o BD
-	db, err := sql.Open("sqlite3", "./database.db")
+	// Inicia o BD e cria a tabela de cotação
+	db, err := initBD()
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		log.Println(err)
@@ -70,15 +62,7 @@ func BuscaCotacaoHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer db.Close()
 
-	// Cria a tabela de cotação, caso não existir
-	err = criaTabelaCotacao(db)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		log.Println(err)
-		return
-	}
-
-	// Insere a cotação consultada na tabela
+	// Insere a cotação na tabela
 	err = insertCotacao(db, cotacao)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -127,8 +111,20 @@ func BuscaCotacao() (*Cotacao, error) {
 	return &cotacao, nil
 }
 
-func criaTabelaCotacao(db *sql.DB) error {
-	_, err := db.Exec(`
+func initBD() (*sql.DB, error) {
+	// Valida se o arquivo database.db está criado e se não tiver, cria ele
+	_, err := os.OpenFile("./database.db", os.O_CREATE, 0644)
+	if err != nil {
+		return nil, err
+	}
+
+	// Carrega o BD
+	db, err := sql.Open("sqlite3", "./database.db")
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = db.Exec(`
 		CREATE TABLE IF NOT EXISTS cotacoes (
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
 			code TEXT,
@@ -146,10 +142,10 @@ func criaTabelaCotacao(db *sql.DB) error {
 	`)
 
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	return db, nil
 }
 
 func insertCotacao(db *sql.DB, cotacao *Cotacao) error {
