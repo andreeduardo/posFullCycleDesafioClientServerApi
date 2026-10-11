@@ -86,7 +86,7 @@ func BuscaCotacaoHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Escrever no header do respose e retorna apenas o valor da cotação
+	// Escrever no header do respose e retorna apenas o valor da cotação cotacao.USDBRL.Bid
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(cotacao.USDBRL.Bid)
@@ -131,8 +131,18 @@ func criaTabelaCotacao(db *sql.DB) error {
 	_, err := db.Exec(`
 		CREATE TABLE IF NOT EXISTS cotacoes (
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
-			bid TEXT
-		)
+			code TEXT,
+			codein TEXT,
+			name TEXT,
+			high TEXT,
+			low TEXT,
+			var_bid TEXT,
+			pct_change TEXT,
+			bid TEXT,
+			ask TEXT,
+			timestamp TEXT,
+			create_date TEXT
+		);
 	`)
 
 	if err != nil {
@@ -150,8 +160,28 @@ func insertCotacao(db *sql.DB, cotacao *Cotacao) error {
 
 	_, err := db.ExecContext(
 		ctx,
-		"INSERT INTO cotacoes (bid) VALUES (?)",
+		`INSERT INTO cotacoes (
+			code, codein, name, 
+			high, low, var_bid, 
+			pct_change, bid, ask, 
+			timestamp, create_date
+		) VALUES (
+			?, ?, ?, 
+			?, ?, ?, 
+			?, ?, ?, 
+			?, ?
+		)`,
+		cotacao.USDBRL.Code,
+		cotacao.USDBRL.Codein,
+		cotacao.USDBRL.Name,
+		cotacao.USDBRL.High,
+		cotacao.USDBRL.Low,
+		cotacao.USDBRL.VarBid,
+		cotacao.USDBRL.PctChange,
 		cotacao.USDBRL.Bid,
+		cotacao.USDBRL.Ask,
+		cotacao.USDBRL.Timestamp,
+		cotacao.USDBRL.CreateDate,
 	)
 
 	if err != nil {
