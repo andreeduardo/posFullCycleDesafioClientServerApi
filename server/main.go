@@ -161,14 +161,14 @@ func insertCotacao(db *sql.DB, cotacao *Cotacao) error {
 	_, err := db.ExecContext(
 		ctx,
 		`INSERT INTO cotacoes (
-			code, codein, name, 
-			high, low, var_bid, 
-			pct_change, bid, ask, 
+			code, codein, name,
+			high, low, var_bid,
+			pct_change, bid, ask,
 			timestamp, create_date
 		) VALUES (
-			?, ?, ?, 
-			?, ?, ?, 
-			?, ?, ?, 
+			?, ?, ?,
+			?, ?, ?,
+			?, ?, ?,
 			?, ?
 		)`,
 		cotacao.USDBRL.Code,
