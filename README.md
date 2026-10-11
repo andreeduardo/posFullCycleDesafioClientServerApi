@@ -1,8 +1,8 @@
-# Desafio Go — Cotação do Dólar
+# Desafio Go - Cotação do Dólar
 
 ## Sobre o projeto
 
-Projeto desenvolvido como entrega de um desafio da pós-graduação, com o objetivo de aplicar conceitos de **HTTP, Contextos, Banco de Dados e Manipulação de Arquivos na linguagem Go**.
+Projeto desenvolvido como entrega de um desafio da pós GoExpert da FullCycle, com o objetivo de aplicar conceitos de **HTTP, Contextos, Banco de Dados e Manipulação de Arquivos na linguagem Go**.
 
 A aplicação é composta por dois programas independentes que se comunicam por HTTP para consultar, persistir e disponibilizar a cotação atual do dólar.
 
@@ -19,7 +19,7 @@ A aplicação é composta por dois programas independentes que se comunicam por 
 - SQLite
 - Manipulação de arquivos
 
-**API externa:** [AwesomeAPI — Cotação USD/BRL](https://economia.awesomeapi.com.br/json/last/USD-BRL)
+**API externa:** [AwesomeAPI - Cotação USD/BRL](https://economia.awesomeapi.com.br/json/last/USD-BRL)
 
 ## Requisitos
 
@@ -75,8 +75,6 @@ O conteúdo do arquivo deverá seguir o formato:
 ```text
 Dólar: 5.1234
 ```
-
-O valor acima é apenas ilustrativo. A cotação registrada dependerá do retorno da API no momento da execução.
 
 ### 4. Consultar o endpoint manualmente
 
